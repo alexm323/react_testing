@@ -1,0 +1,425 @@
+Initial Impressions
+__________________________________________________________________
+There are a bunch of different testing libraries 
+React will work with any testing suite
+
+Enzyme and React Testing Library are among the most popular options 
+
+There are things called smoke tests and snapshot tests that we will learn about 
+
+There is a testing library for anything and jest works here too 
+
+__________________________________________________________________
+Intro to react testing
+__________________________________________________________________
+Time to learn about testing our react apps 
+
+There are some disctinctions to how we are going to approach testing in react 
+
+React-Testing-Library comes with CRA out of the box 
+
+1.Smoke tests
+2. Snapshot Testing 
+
+Write tests to mimic user input 
+
+react can use any testing framework 
+
+CRA ships with jest and RTL 
+
+running npm test will run the react scripts 
+
+its easiest to just put the test files along the components 
+
+npm test
+
+runs the tests
+
+if you have a ton of tests you can specify a particular file to run 
+
+so we could do npm test App.test.js 
+
+in order to test our react apps we have RTL 
+
+very popular testing add-on for react 
+
+The more your tests resemble the way your software is used, the more confidence you can have. 
+
+it helps us simulate the ability to find components by text because when a user looks at the site they are reading and so we look for things by tex text
+
+but first the Smoke Tests 
+
+
+
+
+
+__________________________________________________________________
+Smoke tests
+__________________________________________________________________
+Does the component render, or does it blow up? (like a smoking box)
+
+we are simply checking if a component can render without breaking
+
+these are super quick to write and we can write one for each component and our components are still able to render 
+
+we have a simple counter 
+
+let's create a smoke test for the App component 
+
+render is going to create a div
+render the jsx into that div 
+returns an object of methods that we can use later on 
+
+for a smoke test all we care about is rendering a component 
+
+if we leave the testing thing running it runs if it detects changes 
+
+lets write a test component for a broken component 
+
+Why bother with a smoke test?
+if all it does is tell us that a component can render
+
+they are super lightweight and easy to write ,
+they are an easy way to verify that your components render 
+
+its like a first line of defense 
+
+we want to make sure that we dont have a huge problem before we focus on the details 
+
+aka dont check the faucents while the house is on fire 
+
+they dont take the place of having real solid test coverage but they are good to have 
+
+
+
+__________________________________________________________________
+snapshot tests
+__________________________________________________________________
+new type of tests we have not seen before 
+
+they solve a different problem than a smoke test 
+
+a smoke test will just tell us if there is a huge error that breaks because of our components 
+
+snap shot tests will tell us if the rendering has changed 
+
+kind of like taking a picture of a component 
+
+then checking the image again after running it again to see if the rendering changed 
+
+everytime we run our tests again it is compared to the last one 
+
+Render Revisted 
+
+RTL render method 
+
+-Returns an object of methods 
+-One method is called asFragment 
+-asFrament returns the underlying DOM structure of the component 
+    -very useful for snapshot tests
+    -in conjunction with asSnapshot from Jest 
+
+we are going to have a fixed component now that we are going to snapshot test
+
+the first time I wrote a snapshot i got this back 
+
+ PASS  src/FixedComponent.test.js
+ › 1 snapshot written.
+
+Snapshot Summary
+ › 1 snapshot written from 1 test suite.
+
+Test Suites: 1 failed, 3 passed, 4 total
+Tests:       1 failed, 4 passed, 5 total
+Snapshots:   1 written, 1 total
+Time:        5.041 s
+
+makes us a snapshots directory
+
+
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`it matches snapshot 1`] = `
+<DocumentFragment>
+  <div>
+    <p>
+      Hello, I'm the Broken Component!
+    </p>
+    <p>
+      Here are some numbers:
+    </p>
+    <p>
+      42
+    </p>
+    <p>
+      43
+    </p>
+    <p>
+      44
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+
+this is the first snapshot 
+
+but if we update our code and run it , it is going to fail because the snapshots no longer have the same code 
+
+snapshots are just a way of checking that our components render in the same way as before 
+
+this snapshot test can flag a real issue if the snapshot starts failing the component should render the same way each time 
+
+we have a dog component now and that lets us try snapshots with different props being passed in for the snapshot not sure how but I know there has to be something to account for variables 
+
+these are useful in code reviews with other developers because it lets you go line by line with the changes and decide whether to update a snap shot or keep the old one 
+
+
+__________________________________________________________________
+RTL Query Methods
+__________________________________________________________________
+Specialized Testing 
+
+Often we want to test the events and interactions 
+we don't just want to test that the rendering is the same but often we want to see what happens when users submit the form 
+
+How do we test the events ? (Clicks, form submits, etc.)
+Here are some methods that render returns to you:
+
+when we use the RTL we use render and render returns the object that has a ton of methods on it 
+
+.getByText()
+-Find first matching element by its text (throws error if nothing found)
+it is kind of like query selector 
+.queryByText()
+-Find first matching elemnt by its text (returns null if nothing found)
+
+.getAllByText
+-finds all matches
+.queryAllByText
+
+
+getBy - throws error
+queryBy - wont throw error , returns null 
+
+.getByTestId()/queryByTestId()
+Find matching elemnt by a data-testid attribute (helpful if there is no other convenient way to grab an eelement )
+
+
+lets try using our Counter component to test these testing methods 
+
+get by text is looking for something with an exact element 
+
+if we go to the docs and look at byText 
+
+it shows us all the different options we can pass in 
+
+we can set an object and have that be exact and set that to false 
+
+/ console.log(getByText(`Let's count`))
+    console.log(getByText(`Let's count`, { exact: false }))
+
+so if we pass in the object with exact set to false then now our getByText will work 
+
+the getAll method returns an array for us 
+
+if you use queryByText there should only be 1 element of that because otherwise we should use queryAllByText
+
+// test("playing with queries", () => {
+
+//     const { getAllByText, getByText, queryByText, getByPlaceholderText, getByLabelText } = render(<Counter />)
+
+//     console.log(getAllByText(`count`, { exact: false }))
+//     // console.log(queryByText(`count`, { exact: false }))
+//     // console.log(getByPlaceholderText('username'))
+//     console.log(getByLabelText('Username'))
+// })
+
+
+quickly goes over a lot of the methods we can use to grab items for testing 
+
+
+
+__________________________________________________________________
+Jest DOM Matchers 
+__________________________________________________________________
+
+Extended matchers 
+
+projects with CRA come with a setup file that extends the matching capabities of jest 
+
+its an addon that we can import it and it is set up for us by CRA 
+
+jest-dom is a companion library 
+
+SOme helpful matchers 
+
+.toHaveClass() 
+-check whether an element has a certain class 
+
+.toBeInTheDocument()
+-Check whether an element in the document 
+
+.toContainHTMl()
+-whether an element contains some html 
+
+.toBeEmpty()
+Check whether an element has any content 
+
+test("It should start showing", () => {
+    const { getByText } = render(<Toggler />)
+    const heading = getByText("Hello World")
+    expect(heading).toHaveClass('Toggler-text')
+    expect(heading).toBeInTheDocument()
+})
+
+this is an example of the test we wrote and now we are going to learn about triggering events and testing for the aftermath 
+
+
+__________________________________________________________________
+Firing Events
+__________________________________________________________________
+RTL provides a fireEvent Method that we can use to mimic user interactions
+
+in the docs under fireEvents 
+
+we specify a node an event method 
+
+lets try using our toggler 
+
+we want to select our button so we use getByText
+
+and then we are going to fire event which is soemthing that we are going to grab from our RTL and import it by name
+
+test("It should toggle", () => {
+    const { getByText } = render(<Toggler />);
+    // Select our header with this text
+    const heading = getByText("Hello World");
+    // make sure it has the following class
+    expect(heading).toHaveClass('Toggler-text');
+    // the hello world header should be in the doc
+    expect(heading).toBeInTheDocument();
+    // now we click
+    fireEvent.click(getByText('Toggle'))
+    // now the header should be gone
+    expect(heading).not.toBeInTheDocument();
+
+
+})
+
+select the thing you want to click on and then you fire the event 
+
+now we can test pretty much all of the basic pieces
+
+we can check what text is being displayed vs what is on the document vs not , we can test for styles 
+
+we can test for certain css properties , what elements have been focused on 
+
+we have the basic framework in place for testing more complicated apps 
+
+
+__________________________________________________________________
+Debugging tests
+__________________________________________________________________
+
+lets talk about debugging tests 
+
+it is pretty common that we need to figure out what the dom looks like and what is the value of a specific property 
+
+render provides a debug method 
+
+you call it and it will print out a text version of the structure of your component
+
+    <body>
+      <div>
+        <div>
+          <h1>
+            Let's count!
+          </h1>
+          <h2>
+            Current count:
+            0
+          </h2>
+          <button>
+            Add
+          </button>
+          <label
+            for="user"
+          >
+            Username
+          </label>
+          <input
+            id="user"
+            placeholder="username"
+            type="text"
+          />
+        </div>
+      </div>
+    </body>
+
+here is what debug returns 
+
+test("button clicks", () => {
+    const { getByText, debug } = render(<Counter />)
+    debug();
+    const h2 = getByText(`Current count: 0`)
+    const btn = getByText('Add')
+    fireEvent.click(btn);
+    debug();
+    expect(h2).toHaveTextContent('1');
+    expect(h2).not.toHaveTextContent('0');
+})
+
+
+
+__________________________________________________________________
+React Testing Wrap Up
+__________________________________________________________________
+
+we have seen 2 new types of tests
+
+always make a smoke test 
+
+just test that something is going to render without crashing 
+
+snapshot tests are very easy if output is predictable 
+
+the same input is going to have the same output 
+
+if your component is getting data from an API and stuff 
+this is where mocks come in so you can have a deterministic output
+
+so you can always test it with snapshots 
+
+there were also more specialized react tests that are from the perspective of the user 
+
+fireEvents 
+
+then we can select pieces of the dom again afterwards 
+
+we are just testing from the browsers perspective what would we see hwat is showing up 
+
+and after the interaction what has changed 
+
+you would still want to add unit tests 
+
+if you have a back end or api testing all of that 
+
+Will i use react testing library?
+
+it is very common, used in conjunction with Jest 
+
+we have been using jest for a while 
+
+There are other libraries for react 
+
+The most popular is enzyme 
+
+enzyme works great for class based components 
+
+Jest and RTL work better with hooks currently 
+
+react testing library is officially recommended by react 
+
+
+
